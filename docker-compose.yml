@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:17
+    container_name: demo-project-postgres
+    restart: unless-stopped
+    ports:
+      - "5332:5432"
+    environment:
+      POSTGRES_USER: anubhab09
+      POSTGRES_PASSWORD: anubhab1234
+      POSTGRES_DB: mydb
+      TZ: Asia/Kolkata
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anubhab09"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
