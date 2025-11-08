@@ -34,20 +34,35 @@ IDE: IntelliJ IDEA
 
 📂 Project Structure
 demo-project-1/
+
 ├── src/
+
 │   ├── main/
+
 │   │   ├── java/com/anubhab09/demo_project1/
+
 │   │   │   ├── controller/     # REST endpoints
+
 │   │   │   ├── service/        # Business logic layer
+
 │   │   │   └── repository/     # Data persistence
+
 │   │   └── resources/
+
 │   │       └── application.properties
+
 │   └── test/
+
 │
+
 ├── docker-compose.yml          # PostgreSQL container setup
+
 ├── pom.xml                     # Maven dependencies
+
 ├── .gitignore
+
 └── README.md
+
 
 🐳 Docker Setup
 1️⃣ Start PostgreSQL container
@@ -132,4 +147,4 @@ Containerize full app (Spring Boot + PostgreSQL in one network)
 Anubhab Saha
 📧 prolificworld4u@gmail.com
 
-🌐 GitHub
+🌐 GitHub Anubhab09
