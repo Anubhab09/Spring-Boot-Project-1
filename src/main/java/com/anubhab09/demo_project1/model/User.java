@@ -1,6 +1,10 @@
 package com.anubhab09.demo_project1.model;
 
 import jakarta.persistence.*;
+//import org.hibernate.mapping.List;
+import com.anubhab09.demo_project1.model.Order;
+
+import java.util.List;
 
 @Entity
 @Table(name = "Users")
@@ -21,6 +25,17 @@ public class User {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Order> orders;
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     public int getId() {
