@@ -1,5 +1,6 @@
 package com.anubhab09.demo_project1;
 
+// Simply just to test an api
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
