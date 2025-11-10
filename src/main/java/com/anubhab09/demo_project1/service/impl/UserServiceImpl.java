@@ -2,6 +2,7 @@ package com.anubhab09.demo_project1.service.impl;
 
 import com.anubhab09.demo_project1.dto.OrderResponse;
 import com.anubhab09.demo_project1.dto.UserResponse;
+import com.anubhab09.demo_project1.exception.UserNotFoundException;
 import com.anubhab09.demo_project1.model.Order;
 import com.anubhab09.demo_project1.model.User;
 import com.anubhab09.demo_project1.repository.UserRepository;
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
     @Override
@@ -51,14 +52,16 @@ public class UserServiceImpl implements UserService{
                     user.setEmail(updatedUser.getEmail());
                     return userRepository.save(user);
                 })
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
     @Override
     public void deleteUser(Long id) {
+        if(!userRepository.existsById(id)){
+            throw new UserNotFoundException("User doesn't even exists with this id: " + id);
+        }
         userRepository.deleteById(id);
     }
-
     //  DTO-returning method:
     public List<UserResponse> getAllUsersAsDto() {
         List<User> users = userRepository.findAll();
@@ -68,7 +71,7 @@ public class UserServiceImpl implements UserService{
     }
     public UserResponse getUserByIdAsDto(Long id) {
         User u = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         return toUserResponse(u);
     }
 

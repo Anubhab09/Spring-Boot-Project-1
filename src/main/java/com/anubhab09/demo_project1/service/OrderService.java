@@ -14,5 +14,6 @@ public interface OrderService {
     void deleteOrder(Long orderId);
     OrderResponse createOrderAsDto(Long userId, Order order);
     List<OrderResponse> getAllOrdersAsDto();
-    List<OrderResponse> getOrdersAsDto(Long userId);
+    List<OrderResponse> getOrdersByUserIdAsDto(Long userId);
+    OrderResponse getOrdersByOrderIdAsDto(Long orderId);
 }
