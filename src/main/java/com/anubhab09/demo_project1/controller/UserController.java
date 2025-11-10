@@ -6,6 +6,8 @@ import com.anubhab09.demo_project1.model.User;
 import com.anubhab09.demo_project1.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -39,6 +41,16 @@ public class UserController {
     @GetMapping("/{id}")
     public UserResponse getUserById(@PathVariable Long id) {
         return userService.getUserByIdAsDto(id);
+    }
+
+    // Pagination and Sorting
+    @GetMapping("/paged")
+    public ResponseEntity<Page<UserResponse>> getAllUsersPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction){
+        return ResponseEntity.ok(userService.getAllUsersPaged(page, size, sortBy, direction));
     }
 
     @PutMapping("/{id}")

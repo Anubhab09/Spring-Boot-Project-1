@@ -7,8 +7,11 @@ import com.anubhab09.demo_project1.model.Order;
 import com.anubhab09.demo_project1.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +42,16 @@ public class OrderController {
     @GetMapping
     public List<OrderResponse> getAllOrders() {
         return orderService.getAllOrdersAsDto();
+    }
+
+    // Pagination and Sorting
+    @GetMapping("/paged")
+    public ResponseEntity<Page<OrderResponse>> getAllOrdersPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction){
+        return ResponseEntity.ok(orderService.getAllOrdersPaged(page, size, sortBy, direction));
     }
 
     @PutMapping("{orderId}")

@@ -10,6 +10,10 @@ import com.anubhab09.demo_project1.repository.UserRepository;
 import com.anubhab09.demo_project1.service.OrderService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -92,5 +96,17 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderNotFoundException("Order not found with id: " + orderId);
         }
         orderRepository.deleteById(orderId);
+    }
+
+    //Paging and Sorting
+    @Override
+    public Page<OrderResponse> getAllOrdersPaged(int page, int size, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Order> orders = orderRepository.findAll(pageable);
+        return orders.map(this::toOrderResponse);
     }
 }
