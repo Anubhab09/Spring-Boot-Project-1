@@ -1,5 +1,6 @@
 package com.anubhab09.demo_project1.service.impl;
 
+import com.anubhab09.demo_project1.dto.OrderResponse;
 import com.anubhab09.demo_project1.model.Order;
 import com.anubhab09.demo_project1.model.User;
 import com.anubhab09.demo_project1.repository.OrderRepository;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -24,6 +27,28 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         order.setUser(user);
         return orderRepository.save(order);
+    }
+    // DTO methods
+    public OrderResponse createOrderAsDto(Long userId, Order order) {
+        Order saved = createOrder(userId, order);
+        return toOrderResponse(saved);
+    }
+
+    public List<OrderResponse> getAllOrdersAsDto() {
+        return orderRepository.findAll().stream()
+                .map(this::toOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponse> getOrdersAsDto(Long userId){
+        return orderRepository.findById(userId).stream()
+                .map(this::toOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+    // mapper helper
+    private OrderResponse toOrderResponse(Order o) {
+        return new OrderResponse(o.getId(), o.getProductName(), o.getPrice());
     }
 
     @Override

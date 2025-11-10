@@ -1,7 +1,10 @@
 package com.anubhab09.demo_project1.controller;
 
+import com.anubhab09.demo_project1.dto.CreateUserRequest;
+import com.anubhab09.demo_project1.dto.UserResponse;
 import com.anubhab09.demo_project1.model.User;
 import com.anubhab09.demo_project1.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +18,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public User createUser(@RequestBody User user){
-        return userService.createUser(user);
+    public UserResponse createUser(@RequestBody @Valid CreateUserRequest req) {
+        User u = new User();
+        u.setName(req.getName());
+        u.setEmail(req.getEmail());
+        User saved = userService.createUser(u);
+        return userService.toUserResponse(saved); // if toUserResponse is private, expose conversion or call getUserByIdAsDto(saved.getId())
     }
 
     @PostMapping("/bulk")
@@ -25,13 +32,13 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
+    public List<UserResponse> getAllUsers() {
+        return userService.getAllUsersAsDto();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id){
-        return userService.getUserById(id);
+    public UserResponse getUserById(@PathVariable Long id) {
+        return userService.getUserByIdAsDto(id);
     }
 
     @PutMapping("/{id}")

@@ -1,12 +1,16 @@
 package com.anubhab09.demo_project1.controller;
 
 
+import com.anubhab09.demo_project1.dto.CreateOrderRequest;
+import com.anubhab09.demo_project1.dto.OrderResponse;
 import com.anubhab09.demo_project1.model.Order;
 import com.anubhab09.demo_project1.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
@@ -15,18 +19,21 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/user/{userId}")
-    public Order createOrder(@PathVariable Long userId, @RequestBody Order order){
-        return orderService.createOrder(userId, order);
+    public OrderResponse createOrder(@PathVariable Long userId, @RequestBody @Valid CreateOrderRequest req) {
+        Order o = new Order();
+        o.setProductName(req.getProductName());
+        o.setPrice(req.getPrice());
+        return orderService.createOrderAsDto(userId, o);
     }
 
     @GetMapping("/user/{userId}")
-    public List<Order> getOrder(@PathVariable Long userId){
-        return orderService.getOrderByUser(userId);
+    public List<OrderResponse> getOrdersByUser(@PathVariable Long userId) {
+        return orderService.getOrdersAsDto(userId);
     }
 
     @GetMapping
-    public List<Order> getAllOrders(){
-        return orderService.getAllOrders();
+    public List<OrderResponse> getAllOrders() {
+        return orderService.getAllOrdersAsDto();
     }
 
     @PutMapping("{orderId}")
