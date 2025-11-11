@@ -101,4 +101,21 @@ public class UserServiceImpl implements UserService{
         Page<User> users = userRepository.findAll(pageable);
         return users.map(this::toUserResponse);
     }
+
+    //Custom Queries
+    @Override
+    public List<UserResponse> searchUserByName(String keyward) {
+        return userRepository.searchUserByName(keyward)
+                .stream()
+                .map(this::toUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserResponse> findUsersWithOrders() {
+        return userRepository.findUsersWithOrders()
+                .stream()
+                .map(this::toUserResponse)
+                .collect(Collectors.toList());
+    }
 }

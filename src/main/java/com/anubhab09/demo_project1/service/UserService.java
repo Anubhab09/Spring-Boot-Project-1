@@ -5,6 +5,7 @@ import com.anubhab09.demo_project1.model.Order;
 import com.anubhab09.demo_project1.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface UserService {
     List<UserResponse> getAllUsersAsDto();
     UserResponse getUserByIdAsDto(Long id);
     public Page<UserResponse> getAllUsersPaged(int page, int size, String sortBy, String direction);
+    List<UserResponse> searchUserByName(String keyward);
+    List<UserResponse> findUsersWithOrders();
 }

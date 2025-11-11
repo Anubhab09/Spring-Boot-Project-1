@@ -54,6 +54,19 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrdersPaged(page, size, sortBy, direction));
     }
 
+    // JPQL: Find all orders placed by a user (via email)
+    @GetMapping("/by-email")
+    public ResponseEntity<List<OrderResponse>> getOrdersByUserEmail(@RequestParam String email) {
+        return ResponseEntity.ok(orderService.findOrdersByUserEmail(email));
+    }
+
+    // Native SQL: Get latest N orders
+    @GetMapping("/latest")
+    public ResponseEntity<List<OrderResponse>> getLatestOrders(@RequestParam(defaultValue = "3") int limit) {
+        return ResponseEntity.ok(orderService.findLatestOrders(limit));
+    }
+
+
     @PutMapping("{orderId}")
     public Order updateOrder(@PathVariable Long orderId, @RequestBody Order updatedOrder){
         return orderService.updateOrder(orderId, updatedOrder);

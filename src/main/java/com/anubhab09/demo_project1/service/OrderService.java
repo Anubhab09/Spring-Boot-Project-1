@@ -4,6 +4,7 @@ import com.anubhab09.demo_project1.dto.OrderResponse;
 import com.anubhab09.demo_project1.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,4 +20,6 @@ public interface OrderService {
     List<OrderResponse> getOrdersByUserIdAsDto(Long userId);
     OrderResponse getOrdersByOrderIdAsDto(Long orderId);
     Page<OrderResponse> getAllOrdersPaged(int page, int size, String sortBy, String direction);
+    List<OrderResponse> findOrdersByUserEmail(String email);
+    List<OrderResponse> findLatestOrders(int limit);
 }

@@ -3,6 +3,7 @@ package com.anubhab09.demo_project1.controller;
 import com.anubhab09.demo_project1.dto.CreateUserRequest;
 import com.anubhab09.demo_project1.dto.UserResponse;
 import com.anubhab09.demo_project1.model.User;
+import com.anubhab09.demo_project1.repository.UserRepository;
 import com.anubhab09.demo_project1.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,18 @@ public class UserController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction){
         return ResponseEntity.ok(userService.getAllUsersPaged(page, size, sortBy, direction));
+    }
+
+    // JPQL: Search users by name (case-insensitive)
+    @GetMapping("/search")
+    public ResponseEntity<List<UserResponse>> searchUsersByName(@RequestParam String keyword) {
+        return ResponseEntity.ok(userService.searchUserByName(keyword));
+    }
+
+    // Native SQL: Find users who have at least one order
+    @GetMapping("/with-orders")
+    public ResponseEntity<List<UserResponse>> getUsersWithOrders() {
+        return ResponseEntity.ok(userService.findUsersWithOrders());
     }
 
     @PutMapping("/{id}")

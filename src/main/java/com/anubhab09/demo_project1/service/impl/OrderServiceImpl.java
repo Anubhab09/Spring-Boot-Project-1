@@ -109,4 +109,21 @@ public class OrderServiceImpl implements OrderService {
         Page<Order> orders = orderRepository.findAll(pageable);
         return orders.map(this::toOrderResponse);
     }
+
+    //Custom Queries
+    @Override
+    public List<OrderResponse> findOrdersByUserEmail(String email) {
+        return orderRepository.findOrdersByUserEmail(email)
+                .stream()
+                .map(this::toOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrderResponse> findLatestOrders(int limit) {
+        return orderRepository.findLatestOrders(limit)
+                .stream()
+                .map(this::toOrderResponse)
+                .collect(Collectors.toList());
+    }
 }
