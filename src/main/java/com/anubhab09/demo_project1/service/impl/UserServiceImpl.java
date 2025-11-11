@@ -7,7 +7,11 @@ import com.anubhab09.demo_project1.model.Order;
 import com.anubhab09.demo_project1.model.User;
 import com.anubhab09.demo_project1.repository.UserRepository;
 import com.anubhab09.demo_project1.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,14 +24,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService{
-    private final UserRepository userRepository;
-
     @Autowired
+    private final UserRepository userRepository;
     public UserServiceImpl(UserRepository userRepository){
         this.userRepository=userRepository;
     }
 
     @Override
+    @CacheEvict(value = {"userById", "usersPage"}, allEntries = true)
     public User createUser(User user) {
         return userRepository.save(user);
     }
@@ -49,6 +53,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CacheEvict(value = "userById", key = "#id")
     public User updateUser(Long id, User updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
@@ -60,12 +65,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CacheEvict(value = "userById", key = "#id")
     public void deleteUser(Long id) {
         if(!userRepository.existsById(id)){
             throw new UserNotFoundException("User doesn't even exists with this id: " + id);
         }
         userRepository.deleteById(id);
     }
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     //  DTO-returning method:
     public List<UserResponse> getAllUsersAsDto() {
         List<User> users = userRepository.findAll();
@@ -73,7 +80,9 @@ public class UserServiceImpl implements UserService{
                 .map(this::toUserResponse)
                 .collect(Collectors.toList());
     }
+    @Cacheable(value = "userById", key = "#id")
     public UserResponse getUserByIdAsDto(Long id) {
+        log.info("DB fetch for user id={}", id);
         User u = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         return toUserResponse(u);

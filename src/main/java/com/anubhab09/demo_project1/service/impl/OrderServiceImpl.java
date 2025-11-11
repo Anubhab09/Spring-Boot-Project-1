@@ -10,6 +10,8 @@ import com.anubhab09.demo_project1.repository.UserRepository;
 import com.anubhab09.demo_project1.service.OrderService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private UserRepository userRepository;
 
     @Override
+    @CacheEvict(value = {"orderById", "orderByUser"}, allEntries = true)
     public Order createOrder(Long userId, @NotNull Order order) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + userId));
@@ -45,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(this::toOrderResponse)
                 .collect(Collectors.toList());
     }
-
+    @Cacheable(value = "orderByUser", key = "#userId")
     public List<OrderResponse> getOrdersByUserIdAsDto(Long userId){
         if(!userRepository.existsById(userId)){
             throw new UserNotFoundException("User not found with id: " + userId);
@@ -58,8 +61,8 @@ public class OrderServiceImpl implements OrderService {
                 .map(this::toOrderResponse)
                 .collect(Collectors.toList());
     }
-
-    public OrderResponse getOrdersByOrderIdAsDto(Long orderId){
+    @Cacheable(value = "orderById", key = "#id")
+    public OrderResponse getOrderByOrderIdAsDto(Long orderId){
         Order order= orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
         return toOrderResponse(order);
@@ -81,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @CacheEvict(value = {"orderByUser", "orderById"}, allEntries = true)
     public Order updateOrder(Long orderId, @NotNull Order updatedOrder) {
         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
@@ -91,6 +95,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @CacheEvict(value = {"orderById", "orderByUser"}, allEntries = true)
     public void deleteOrder(Long orderId) {
         if(!orderRepository.existsById(orderId)){
             throw new OrderNotFoundException("Order not found with id: " + orderId);
