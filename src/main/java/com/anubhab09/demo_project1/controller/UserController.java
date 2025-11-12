@@ -5,6 +5,7 @@ import com.anubhab09.demo_project1.dto.UserResponse;
 import com.anubhab09.demo_project1.model.User;
 import com.anubhab09.demo_project1.repository.UserRepository;
 import com.anubhab09.demo_project1.service.UserService;
+import com.anubhab09.demo_project1.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/Users")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @PostMapping
     public UserResponse createUser(@RequestBody @Valid CreateUserRequest req) {

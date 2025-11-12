@@ -5,6 +5,7 @@ import com.anubhab09.demo_project1.dto.CreateOrderRequest;
 import com.anubhab09.demo_project1.dto.OrderResponse;
 import com.anubhab09.demo_project1.model.Order;
 import com.anubhab09.demo_project1.service.OrderService;
+import com.anubhab09.demo_project1.service.impl.OrderServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/orders")
 public class OrderController {
     @Autowired
-    private OrderService orderService;
+    private OrderServiceImpl orderService;
 
     @PostMapping("/user/{userId}")
     public OrderResponse createOrder(@PathVariable Long userId, @RequestBody @Valid CreateOrderRequest req) {

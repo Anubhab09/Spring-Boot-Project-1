@@ -1,0 +1,10 @@
+target
+.git
+.gitignore
+.idea
+.vscode
+*.iml
+.DS_Store
+*.log
+tmp
+src/test

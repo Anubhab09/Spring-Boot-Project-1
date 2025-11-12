@@ -1,35 +1,73 @@
+# version: "3.8"
+
 services:
   db:
     image: postgres:17
     container_name: demo-project-postgres
     restart: unless-stopped
-    ports:
-      - "5332:5432"
     environment:
       POSTGRES_USER: anubhab09
       POSTGRES_PASSWORD: anubhab1234
       POSTGRES_DB: mydb
-      TZ: Asia/Kolkata
+      TZ: "Asia/Kolkata"
+    ports:
+      - "5332:5432"
     volumes:
-      - pgdata:/var/lib/postgresql
+      - pgdata:/var/lib/postgresql/data
       - ./initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U anubhab09"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   redis:
-    image: redis:latest
+    image: redis:7-alpine
     container_name: demo-project-redis
     restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "6379:6379"
-    command: [ "redis-server", "--appendonly", "yes" ]
     volumes:
       - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-project-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: anubhab09
+      SPRING_DATASOURCE_PASSWORD: anubhab1234
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_PROFILES_ACTIVE: docker
+      TZ: "Asia/Kolkata"
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
 
 volumes:
   pgdata:
   redisdata:
+
+networks:
+  app-network:
+    driver: bridge
