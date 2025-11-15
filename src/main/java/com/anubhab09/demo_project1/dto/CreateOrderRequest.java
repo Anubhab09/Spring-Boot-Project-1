@@ -12,7 +12,7 @@ public class CreateOrderRequest {
     @Positive(message = "Price must be positive")
     private double price;
 
-    @NotNull(message = "userId required")
+    // @NotNull(message = "userId required")
     private Long userId;
 
     public CreateOrderRequest() {
