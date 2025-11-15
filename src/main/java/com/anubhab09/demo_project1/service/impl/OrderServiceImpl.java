@@ -1,6 +1,7 @@
 package com.anubhab09.demo_project1.service.impl;
 
 import com.anubhab09.demo_project1.dto.OrderResponse;
+import com.anubhab09.demo_project1.event.OrderCreatedEvent;
 import com.anubhab09.demo_project1.exception.OrderNotFoundException;
 import com.anubhab09.demo_project1.exception.UserNotFoundException;
 import com.anubhab09.demo_project1.model.Order;
@@ -16,8 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,10 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired(required = false)
+    private KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
+
+    private static final org.slf4j.Logger log= org.slf4j.LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Override
     @CacheEvict(value = {"orderById", "orderByUser"}, allEntries = true)
@@ -35,8 +42,41 @@ public class OrderServiceImpl implements OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + userId));
         order.setUser(user);
-        return orderRepository.save(order);
+
+        Order saved = orderRepository.save(order);
+
+        OrderCreatedEvent evt = new OrderCreatedEvent(
+                saved.getId(),
+                userId,
+                saved.getProductName(),
+                saved.getPrice(),
+                Instant.now()
+        );
+
+        if (kafkaTemplate != null) {
+
+            kafkaTemplate.send("order-created", String.valueOf(saved.getId()), evt)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to produce order event for {}: {}", saved.getId(), ex.getMessage());
+                            return;
+                        }
+
+                        var meta = result.getRecordMetadata();
+                        log.info(
+                                "Produced event for order {} to topic={} partition={} offset={}",
+                                saved.getId(),
+                                meta.topic(),
+                                meta.partition(),
+                                meta.offset()
+                        );
+                    });
+        } else {
+            log.debug("KafkaTemplate is null, skipping event publishing.");
+        }
+        return saved;
     }
+
     // DTO methods
     public OrderResponse createOrderAsDto(Long userId, Order order) {
         Order saved = createOrder(userId, order);
