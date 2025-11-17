@@ -1,4 +1,4 @@
-package com.anubhab09.demo_project1.model;
+package com.anubhab09.demo_project1.event;
 
 import jakarta.persistence.*;
 

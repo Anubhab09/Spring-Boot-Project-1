@@ -1,6 +1,6 @@
 package com.anubhab09.demo_project1.repository;
 
-import com.anubhab09.demo_project1.model.OrderEvent;
+import com.anubhab09.demo_project1.event.OrderEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

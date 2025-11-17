@@ -1,7 +1,7 @@
 package com.anubhab09.demo_project1.kafka;
 
 import com.anubhab09.demo_project1.event.OrderCreatedEvent;
-import com.anubhab09.demo_project1.model.OrderEvent;
+import com.anubhab09.demo_project1.event.OrderEvent;
 import com.anubhab09.demo_project1.repository.OrderEventRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
