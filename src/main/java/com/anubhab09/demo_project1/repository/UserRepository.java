@@ -20,6 +20,3 @@ public interface UserRepository extends JpaRepository<User, Long>{
     @Query(value = "SELECT * FROM users u WHERE u.id IN (SELECT DISTINCT o.user_id FROM orders o)", nativeQuery = true)
     List<User> findUsersWithOrders();
 }
-
-//public class UserRepository {
-//}
