@@ -1,9 +1,12 @@
 package com.anubhab09.order_service.service.impl;
 
 import com.anubhab09.order_service.dto.OrderResponse;
+import com.anubhab09.order_service.dto.UserDto;
+import com.anubhab09.order_service.event.OrderCreatedEvent;
 import com.anubhab09.order_service.exception.OrderNotFoundException;
 import com.anubhab09.order_service.exception.UserNotFoundException;
 import com.anubhab09.order_service.exception.UserServiceUnavailableException;
+import com.anubhab09.order_service.kafka.OrderEventProducer;
 import com.anubhab09.order_service.model.Order;
 import com.anubhab09.order_service.repository.OrderRepository;
 import com.anubhab09.order_service.service.OrderService;
@@ -20,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +34,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private RestTemplate restTemplate;
-    // private static final org.slf4j.Logger log= org.slf4j.LoggerFactory.getLogger(OrderServiceImpl.class);
+    @Autowired
+    private OrderEventProducer orderEventProducer;
 
     private void validateUserExists(Long userId){
 
@@ -70,6 +75,17 @@ public class OrderServiceImpl implements OrderService {
         order.setUserId(userId);   // <-- IMPORTANT: make sure your Order entity in order-service has a `userId` field mapped to column user_id
 
         Order saved = orderRepository.save(order);
+
+        OrderCreatedEvent evt = new OrderCreatedEvent(
+                saved.getId(),
+                userId,
+                saved.getProductName(),
+                saved.getPrice(),
+                Instant.now()
+        );
+
+        orderEventProducer.PublishOrderCreated(evt);
+
         return saved;
     }
 
@@ -104,7 +120,18 @@ public class OrderServiceImpl implements OrderService {
 
     // mapper helper
     private OrderResponse toOrderResponse(Order o) {
-        return new OrderResponse(o.getId(), o.getProductName(), o.getPrice());
+        UserDto userDto = restTemplate.getForObject(
+                "http://user-service:8080/Users/" + o.getUserId(),
+                UserDto.class
+        );
+        return new OrderResponse(
+                o.getId(),
+                o.getProductName(),
+                o.getPrice(),
+                userDto.getId(),
+                userDto.getName(),
+                userDto.getEmail()
+        );
     }
 
     @Override

@@ -1,6 +1,7 @@
-package com.anubhab09.demo_project1.config;
+package com.anubhab09.order_service.config;
 
-import com.anubhab09.demo_project1.event.OrderCreatedEvent;
+
+import com.anubhab09.order_service.event.OrderCreatedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -60,3 +61,4 @@ public class KafkaConfig {
         return factory;
     }
 }
+

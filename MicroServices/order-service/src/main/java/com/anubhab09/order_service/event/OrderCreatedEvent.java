@@ -1,36 +1,25 @@
-package com.anubhab09.demo_project1.event;
+package com.anubhab09.order_service.event;
 
-import jakarta.persistence.*;
+// Event DTO
 
 import java.time.Instant;
 
-@Entity
-@Table(name = "order_events", uniqueConstraints = @UniqueConstraint(columnNames = {"orderId"}))
-public class OrderEvent {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private Long orderId;
+public class OrderCreatedEvent {
     private Long userId;
+    private Long orderId;
     private String productName;
     private double price;
     private Instant createdAt;
-    private Instant receivedAt;
 
-    public OrderEvent() {
+    public OrderCreatedEvent() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Long orderId) {
+    public OrderCreatedEvent(Long userId, Long orderId, String productName, double price, Instant createdAt) {
+        this.userId = userId;
         this.orderId = orderId;
+        this.productName = productName;
+        this.price = price;
+        this.createdAt = createdAt;
     }
 
     public Long getUserId() {
@@ -39,6 +28,14 @@ public class OrderEvent {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public String getProductName() {
@@ -64,12 +61,5 @@ public class OrderEvent {
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
-
-    public Instant getReceivedAt() {
-        return receivedAt;
-    }
-
-    public void setReceivedAt(Instant receivedAt) {
-        this.receivedAt = receivedAt;
-    }
 }
+
