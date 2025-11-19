@@ -43,6 +43,27 @@ services:
     networks:
       - app-network
 
+  inventory-db:
+    image: postgres:17
+    container_name: inventory-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: inventory_service
+      POSTGRES_PASSWORD: user1234
+      POSTGRES_DB: inventorydb
+      TZ: "Asia/Kolkata"
+    ports:
+      - "5335:5432"
+    volumes:
+      - inventory_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U inventory_service" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
   redis:
     image: redis:7-alpine
     container_name: demo-project-redis
@@ -146,9 +167,34 @@ services:
     networks:
       - app-network
 
+  inventory-service:
+    build:
+      context: ./MicroServices/inventory-service
+      dockerfile: Dockerfile
+    container_name: inventory-service
+    restart: unless-stopped
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+      # redis:
+      #   condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://inventory-db:5432/inventorydb
+      SPRING_DATASOURCE_USERNAME: inventory_service
+      SPRING_DATASOURCE_PASSWORD: user1234
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_PROFILES_ACTIVE: docker
+      TZ: "Asia/Kolkata"
+    ports:
+      - "8083:8080"
+    networks:
+      - app-network
+
 volumes:
   user_pgdata:
   order_pgdata:
+  inventory_pgdata:
   redisdata:
 
 networks:
