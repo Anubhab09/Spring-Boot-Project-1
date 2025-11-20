@@ -1,8 +1,14 @@
 package com.anubhab09.inventory_service.service;
 
+import com.anubhab09.inventory_service.entity.InventoryItem;
 import com.anubhab09.inventory_service.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -10,6 +16,14 @@ public class InventoryService {
     private final InventoryRepository repo;
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InventoryService.class);
 
+    @Cacheable(value = "inventoryByName", key = "#productName")
+    public Optional<InventoryItem> getByProductName(String productName) {
+        return repo.findByProductName(productName);
+    }
+
+
+    @CachePut(value = "inventoryByName", key = "#productName")
+    @CacheEvict(value = "inventoryAll", allEntries = true)
     public boolean reserveItem(String productName, int qtyToReserve){
         return repo.findByProductName(productName)
                 .map(inventoryItem -> {

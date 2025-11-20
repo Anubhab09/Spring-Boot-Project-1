@@ -2,6 +2,7 @@ package com.anubhab09.inventory_service.controller;
 
 import com.anubhab09.inventory_service.entity.InventoryItem;
 import com.anubhab09.inventory_service.repository.InventoryRepository;
+import com.anubhab09.inventory_service.service.InventoryService;
 import lombok.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InventoryController {
     private final InventoryRepository repo;
+    private final InventoryService service;
 
     @GetMapping
     private List<InventoryItem> listall(){
@@ -22,7 +24,7 @@ public class InventoryController {
 
     @GetMapping("/by-name/{productName}")
     private ResponseEntity<InventoryItem> getByName(@PathVariable String productName){
-        return repo.findByProductName(productName)
+        return  service.getByProductName(productName)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
