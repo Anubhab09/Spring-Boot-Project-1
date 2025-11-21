@@ -128,8 +128,8 @@ services:
     depends_on:
       user-db:
         condition: service_healthy
-      # redis:
-      #   condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/userdb
       SPRING_DATASOURCE_USERNAME: user_service
@@ -152,8 +152,8 @@ services:
     depends_on:
       order-db:
         condition: service_healthy
-      # redis:
-      #   condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/orderdb
       SPRING_DATASOURCE_USERNAME: order_service
@@ -176,8 +176,8 @@ services:
     depends_on:
       inventory-db:
         condition: service_healthy
-      # redis:
-      #   condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://inventory-db:5432/inventorydb
       SPRING_DATASOURCE_USERNAME: inventory_service
