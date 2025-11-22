@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: zookeeper
-          image: bitnami/zookeeper:3.9
+          image: confluentinc/cp-zookeeper:7.4.0
           env:
             - name: ALLOW_ANONYMOUS_LOGIN
               value: "yes"
@@ -61,7 +61,7 @@ spec:
     spec:
       containers:
         - name: kafka
-          image: bitnami/kafka:3.6
+          image: confluentinc/cp-kafka:7.4.0
           env:
             - name: KAFKA_CFG_ZOOKEEPER_CONNECT
               value: "zookeeper:2181"

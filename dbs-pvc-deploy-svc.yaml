@@ -80,8 +80,10 @@ spec:
           readinessProbe:
             exec:
               command: [ "pg_isready", "-U", "user_service" ]
-            initialDelaySeconds: 5
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
             periodSeconds: 10
+            failureThreshold: 10
       volumes:
         - name: pgdata
           persistentVolumeClaim:
@@ -151,8 +153,10 @@ spec:
           readinessProbe:
             exec:
               command: ["sh", "-c", "pg_isready -U order_service"]
-            initialDelaySeconds: 5
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
             periodSeconds: 10
+            failureThreshold: 10
       volumes:
         - name: pgdata
           persistentVolumeClaim:
@@ -222,8 +226,10 @@ spec:
           readinessProbe:
             exec:
               command: ["sh", "-c", "pg_isready -U inventory_service"]
-            initialDelaySeconds: 5
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
             periodSeconds: 10
+            failureThreshold: 10
       volumes:
         - name: pgdata
           persistentVolumeClaim:
