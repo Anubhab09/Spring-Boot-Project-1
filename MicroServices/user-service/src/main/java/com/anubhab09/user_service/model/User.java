@@ -1,6 +1,8 @@
 package com.anubhab09.user_service.model;
 
 import jakarta.persistence.*;
+
+import java.time.Instant;
 //import org.hibernate.mapping.List;
 
 @Entity
@@ -11,17 +13,28 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String username;
 
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role = Role.USER;
+
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt = Instant.now();
+
     public User() {}
 
-    public User(Long id, String name, String email) {
-        this.id = id;
-        this.name = name;
+    public User( String username, String email, String password, Role role) {
+        this.username = username;
         this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -32,12 +45,12 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -48,4 +61,25 @@ public class User {
         this.email = email;
     }
 
+    public String getPassword() { return password; }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
 }

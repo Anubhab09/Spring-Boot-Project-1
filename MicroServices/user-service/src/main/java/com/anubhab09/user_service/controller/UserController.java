@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.List;
 
 @RestController
@@ -22,7 +21,7 @@ public class UserController {
     @PostMapping
     public UserResponse createUser(@RequestBody @Valid CreateUserRequest req) {
         User u = new User();
-        u.setName(req.getName());
+        u.setUsername(req.getName());
         u.setEmail(req.getEmail());
         User saved = userService.createUser(u);
         return userService.toUserResponse(saved); // if toUserResponse is private, expose conversion or call getUserByIdAsDto(saved.getId())

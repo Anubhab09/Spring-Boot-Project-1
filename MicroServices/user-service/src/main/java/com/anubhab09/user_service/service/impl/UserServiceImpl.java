@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(Long id, User updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
-                    user.setName(updatedUser.getName());
+                    user.setUsername(updatedUser.getUsername());
                     user.setEmail(updatedUser.getEmail());
                     return userRepository.save(user);
                 })
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
     // Mapper helper - simplified (no orders)
     public UserResponse toUserResponse(User u) {
-        return new UserResponse(u.getId(), u.getName(), u.getEmail());
+        return new UserResponse(u.getId(), u.getUsername(), u.getEmail());
     }
 
     // Pagination and Sorting (returns DTO page)
